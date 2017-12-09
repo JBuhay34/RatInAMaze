@@ -84,8 +84,9 @@ public class Maze {
 		// Choose a random room
 		Random room = new Random();
 		Random side = new Random();
-		//while (find(0) != find(N - 1)) {
+		while (find(0) != find(N - 1)) {
 			int m = room.nextInt(N);
+			System.out.println("m is " + m);
 
 			// case for when m is the start room
 			if (m == 0) {
@@ -94,11 +95,11 @@ public class Maze {
 
 					a[0][EAST] = 0;
 					a[1][WEST] = 0;
-					//union(0, 1);
+					union(0, 1);
 				} else {
 					a[0][SOUTH] = 0;
 					a[n][NORTH] = 0;
-					//union(0, n);
+					union(0, n);
 				}
 				// case for when m is the top right corner room
 			} else if (m == n - 1) {
@@ -106,11 +107,11 @@ public class Maze {
 				if (s == 0) {
 					a[n - 1][SOUTH] = 0;
 					a[2 * (n - 1)][NORTH] = 0;
-					//union(n - 1, 2 * (n - 1));
+					union(n - 1, 2 * (n - 1));
 				} else {
 					a[n - 1][WEST] = 0;
 					a[n - 2][EAST] = 0;
-					//union(n - 1, n - 2);
+					union(n - 1, n - 2);
 				}
 				// case for when m is the bottom left corner room
 			} else if (m == N - n) {
@@ -118,11 +119,11 @@ public class Maze {
 				if (s == 0) {
 					a[N - n][NORTH] = 0;
 					a[(N - n) - n][SOUTH] = 0;
-					//union(N - n, (N - n) - n);
+					union(N - n, (N - n) - n);
 				} else {
 					a[N - n][EAST] = 0;
 					a[(N - n) + 1][WEST] = 0;
-					//union(N - n, (N - n) + 1);
+					union(N - n, (N - n) + 1);
 				}
 				// case for when m is the goal room
 			} else if (m == N - 1) {
@@ -130,11 +131,11 @@ public class Maze {
 				if (s == 0) {
 					a[N - 1][NORTH] = 0;
 					a[(N - 1) - n][SOUTH] = 0;
-					//union(N - 1, (N - 1) - n);
+					union(N - 1, (N - 1) - n);
 				} else {
 					a[N - 1][WEST] = 0;
 					a[N - 2][EAST] = 0;
-					//union(N - 1, N - 2);
+					union(N - 1, N - 2);
 				}
 				// case for when m is the top row but not the top right corner room or start
 				// room
@@ -143,15 +144,15 @@ public class Maze {
 				if (s == 0) {
 					a[m][EAST] = 0;
 					a[m + 1][WEST] = 0;
-					//union(m, m + 1);
+					union(m, m + 1);
 				} else if (s == 1) {
 					a[m][SOUTH] = 0;
 					a[m + n][NORTH] = 0;
-					//union(m, m + n);
+					union(m, m + n);
 				} else {
 					a[m][WEST] = 0;
 					a[m - 1][EAST] = 0;
-					//union(m, m - 1);
+					union(m, m - 1);
 				}
 				// case for when m is the first column except goal room
 			} else if (m % n == 0 && m > 1 && m < (N - n)) {
@@ -159,15 +160,15 @@ public class Maze {
 				if (s == 0) {
 					a[m][NORTH] = 0;
 					a[m - n][SOUTH] = 0;
-					//union(m, m - n);
+					union(m, m - n);
 				} else if (s == 1) {
 					a[m][SOUTH] = 0;
 					a[m + n][NORTH] = 0;
-					//union(m, m + n);
+					union(m, m + n);
 				} else {
 					a[m][EAST] = 0;
 					a[m + 1][WEST] = 0;
-					//union(m, m + 1);
+					union(m, m + 1);
 				}
 				// case for when m is the last column of except the corner rooms
 			} else if ((m + 1) % n == 0 && m > n && m < (N - 1)) {
@@ -175,15 +176,15 @@ public class Maze {
 				if (s == 0) {
 					a[m][NORTH] = 0;
 					a[m - n][SOUTH] = 0;
-					//union(m, m - n);
+					union(m, m - n);
 				} else if (s == 1) {
 					a[m][SOUTH] = 0;
 					a[m + n][NORTH] = 0;
-					//union(m, m + n);
+					union(m, m + n);
 				} else {
 					a[m][WEST] = 0;
 					a[m - 1][EAST] = 0;
-					//union(m, m - 1);
+					union(m, m - 1);
 				}
 				// case for when m is the bottom row besides corners
 			} else if (m < N - 1 && m > N - n) {
@@ -191,42 +192,41 @@ public class Maze {
 				if (s == 0) {
 					a[m][NORTH] = 0;
 					a[m - n][SOUTH] = 0;
-					//union(m, m - n);
+					union(m, m - n);
 				} else if (s == 1) {
 					a[m][EAST] = 0;
 					a[m + 1][WEST] = 0;
-					//union(m, m + 1);
+					union(m, m + 1);
 				} else {
 					a[m][WEST] = 0;
 					a[m - 1][EAST] = 0;
-					//union(m, m - 1);
+					union(m, m - 1);
 				}
 				// any middle room
 			} else {
-				System.out.println("m is the middle room " + m);
 				int s = side.nextInt(4);
 				if (s == 0) {
 					a[m][NORTH] = 0;
 					a[m - n][SOUTH] = 0;
-					//union(m, m - n);
+					union(m, m - n);
 				} else if (s == 1) {
 					a[m][SOUTH] = 0;
 					a[m + n][NORTH] = 0;
-					//union(m, m + n);
+					union(m, m + n);
 				} else if (s == 2) {
 					a[m][EAST] = 0;
 					a[m + 1][WEST] = 0;
-					//union(m, m + 1);
+					union(m, m + 1);
 
 
 				} else {
 					a[m][WEST] = 0;
 					a[m - 1][EAST] = 0;
-					//union(m, m - 1);
+					union(m, m - 1);
 				}
 			}
 
-		//} // end while
+		} // end while
 			
 			for(int i = 0; i < N; i++) {
 				System.out.println();
@@ -248,9 +248,29 @@ public class Maze {
 	} // End of generate maze
 
 	// find method, returns the root of the disjoint set
+	public static int find(int x){
+		if(b[x] < 0){
+			return x;
+		} else{
+			b[x] = find(b[x]);
+			return b[x];
+		}
+	}
 
 	// union method conjoins the two rooms into the same set
 	public static void union(int room1, int room2) {
+		if(find(room1) == find(room2)){
+			return;
+		}
+		
+		if(b[room1] < b[room2]){
+			b[room1] = find(room2);
+		} else if(b[room1] > b[room2]){
+			b[room2] = find(room1);
+		} else{
+			b[room2] = find(room1);
+			b[room1] = b[room1] - 1;
+		}
 		
 	}
 	
