@@ -58,7 +58,7 @@ public class Maze {
 		a[n * n - 1][SOUTH] = 0;
 
 		// Close every north wall of first row (leaving the start room out)
-		for (int i = 1; i < n - 1; i++) {
+		for (int i = 1; i < n; i++) {
 			a[i][NORTH] = 1;
 		}
 
