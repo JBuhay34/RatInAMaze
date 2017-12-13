@@ -1,4 +1,9 @@
 import java.util.Scanner;
+
+import graph.DisplayGraph;
+import graph.MazeGraph;
+import graph.MazeGraphSolver;
+
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -242,7 +247,18 @@ public class Maze {
 			}
 		}
 		System.out.println("\n");
-		draw(maze);
+		int numCells = maze.length() / 4;
+		MazeGraph mazeGraph = new MazeGraph(numCells);
+		mazeGraph.populateMazeGraph(maze);
+		
+		// Displaying results
+		DisplayGraph.print(maze, mazeGraph);
+		// run the solver(s)
+		System.out.println("");
+		MazeGraphSolver.solveWithBFS(mazeGraph);
+		System.out.println();
+		MazeGraphSolver.solveWithDFS(mazeGraph);
+		System.out.println("");
 		System.out.println("\n");
 
 		// This Linked list is used to see what neightbors are connected/open
