@@ -49,8 +49,15 @@ public class Maze {
 	}
 
 	public static void generateRandomMaze(int n) {
-		int[][] a = new int[n * n][4];
 		N = n * n;
+		int[][] a = new int[N][4];
+		// Close everything for now.
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < 4; j++) {
+				a[i][j] = 1;
+			}
+		}
+
 		// Leave north wall of start room open.
 		a[0][NORTH] = 0;
 
@@ -63,7 +70,7 @@ public class Maze {
 		}
 
 		// Close every south wall of last row (leaving the goal room out)
-		for (int i = N-n; i < N-1; i++) {
+		for (int i = N - n; i < N - 1; i++) {
 			a[i][SOUTH] = 1;
 		}
 
@@ -91,12 +98,12 @@ public class Maze {
 			// case for when m is the start room
 			if (m == 0) {
 				int s = side.nextInt(2);
-				if (s == 0) {
+				if (s == 0 && find(0) != find(n)) {
 
 					a[0][EAST] = 0;
 					a[1][WEST] = 0;
 					union(0, 1);
-				} else {
+				} else if (s == 1 && find(0) != find(1)) {
 					a[0][SOUTH] = 0;
 					a[n][NORTH] = 0;
 					union(0, n);
@@ -104,14 +111,14 @@ public class Maze {
 				// case for when m is the top right corner room
 			} else if (m == n - 1) {
 				int s = side.nextInt(2);
-				if (s == 0) {
+				if (s == 0 && find(n - 1) != find(n - 2)) {
 					a[n - 1][SOUTH] = 0;
-					a[2 * (n - 1)][NORTH] = 0;
-					union(n - 1, 2 * (n - 1));
+					a[(n - 1)+n][NORTH] = 0;
+					union(n - 1,  n + (n - 1));
 				} else {
-					a[n - 1][WEST] = 0;
-					a[n - 2][EAST] = 0;
-					union(n - 1, n - 2);
+					a[m][WEST] = 0;
+					a[m-1][EAST] = 0;
+					union(m, m-1);
 				}
 				// case for when m is the bottom left corner room
 			} else if (m == N - n) {
@@ -128,11 +135,11 @@ public class Maze {
 				// case for when m is the goal room
 			} else if (m == N - 1) {
 				int s = side.nextInt(2);
-				if (s == 0) {
+				if (s == 0 && find(N - 1) != find(N - 2)) {
 					a[N - 1][NORTH] = 0;
 					a[(N - 1) - n][SOUTH] = 0;
 					union(N - 1, (N - 1) - n);
-				} else {
+				} else if (s == 1 && find(N - 1) != find((N - 1) - n)) {
 					a[N - 1][WEST] = 0;
 					a[N - 2][EAST] = 0;
 					union(N - 1, N - 2);
@@ -217,8 +224,6 @@ public class Maze {
 					a[m][EAST] = 0;
 					a[m + 1][WEST] = 0;
 					union(m, m + 1);
-
-
 				} else {
 					a[m][WEST] = 0;
 					a[m - 1][EAST] = 0;
@@ -227,14 +232,19 @@ public class Maze {
 			}
 
 		} // end while
-			
-			for(int i = 0; i < N; i++) {
-				System.out.println();
-				for(int j = 0; j < 4; j++) {
-					System.out.print(a[i][j] + " ");
-				}
+
+		String maze = "";
+		for (int i = 0; i < N; i++) {
+			System.out.println();
+			for (int j = 0; j < 4; j++) {
+				maze += a[i][j];
+				System.out.print(" " + a[i][j]);
+				
 			}
-			System.out.println("\n");
+		}
+		System.out.println("\n");
+		draw(maze);
+		System.out.println("\n");
 
 		// This Linked list is used to see what neightbors are connected/open
 		/*
@@ -248,10 +258,10 @@ public class Maze {
 	} // End of generate maze
 
 	// find method, returns the root of the disjoint set
-	public static int find(int x){
-		if(b[x] < 0){
+	public static int find(int x) {
+		if (b[x] < 0) {
 			return x;
-		} else{
+		} else {
 			b[x] = find(b[x]);
 			return b[x];
 		}
@@ -259,47 +269,61 @@ public class Maze {
 
 	// union method conjoins the two rooms into the same set
 	public static void union(int room1, int room2) {
-		if(find(room1) == find(room2)){
+
+		int parentRoom1 = find(room1);
+		int parentRoom2 = find(room2);
+
+		if (parentRoom1 == parentRoom2) {
 			return;
 		}
-		
-		if(b[room1] < b[room2]){
-			b[room1] = find(room2);
-		} else if(b[room1] > b[room2]){
-			b[room2] = find(room1);
-		} else{
-			b[room2] = find(room1);
-			b[room1] = b[room1] - 1;
+
+		if (b[parentRoom2] < b[parentRoom1]) {
+			b[parentRoom2] += b[parentRoom1];
+			b[parentRoom1] = parentRoom2;
+		} else {
+			b[parentRoom1] += b[parentRoom2];
+			b[parentRoom2] = parentRoom1;
 		}
-		
+
 	}
-	
-	public static void draw(int[][] a) {
-		char[][] grid = new char[N*n][4];
-		for(int i = 0; i < N; i++) {
-			for(int j = 0; j < 4; j++) {
-				if(a[i][j] == 1 && j == NORTH) {
-					grid[i][j] = '-';
-				} else if(a[i][j] == 1 && j == SOUTH) {
-					grid[i][j] = '_';
-				} else if(a[i][j] == 1 && (j == WEST || j == EAST)) {
-					grid[i][j] = '|';
-				} else {
-					grid[i][j] = ' ';
-				}
+
+	public static void draw(String maze) {
+		int mazeLength = maze.length();
+		int[][] array = convertStringToMultidimensionalIntArray(maze);
+		
+
+
+
+	}
+
+	private static int[][] convertStringToMultidimensionalIntArray(String maze) {
+		// TODO Auto-generated method stub
+		int[][] array = new int[N][4];
+		
+		for(int i = 0; i < maze.length(); i++) {
+			int currentRoom = i/4;
+			int whichWall = i % 4;
+			if(whichWall == NORTH) {
+				array[currentRoom][NORTH] = Character.getNumericValue(maze.charAt(i));
+			} else if(whichWall == SOUTH) {
+				array[currentRoom][SOUTH] = Character.getNumericValue(maze.charAt(i));
+			} else if(whichWall == WEST) {
+				array[currentRoom][WEST] = Character.getNumericValue(maze.charAt(i));
+			} else if(whichWall == EAST) {
+				array[currentRoom][EAST] = Character.getNumericValue(maze.charAt(i));
 			}
 		}
 		
-		for(int i = 0; i < N*n; i++) {
-			if(i % n == 0){
-				System.out.println();
-			}
-			for(int j = 0; j < 4; j++) {
-				System.out.print(grid[i][j]);
-
+		for (int i = 0; i < N; i++) {
+			System.out.println();
+			for (int j = 0; j < 4; j++) {
+				System.out.print(" " + array[i][j]);
+				
 			}
 		}
+		System.out.println("\n");
 
+		return array;
 	}
 
 }
