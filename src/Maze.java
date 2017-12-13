@@ -4,6 +4,8 @@ import graph.DisplayGraph;
 import graph.MazeGraph;
 import graph.MazeGraphSolver;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -17,11 +19,35 @@ public class Maze {
 	public static int N;
 	public static int n;
 	public static int[] b;
+	
+	public static int mazeSize; // "size" of maze, meaning either width or height
+	public static String mazeData; // String of 1's and 0's representing the maze
 
 	public static void main(String[] args) {
 
 		if (args.length != 0) {
-			// readFile
+			File filename = new File(args[0]);
+			try {
+				readFile(filename);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+			int numCells = mazeData.length() / 4;
+			MazeGraph mazeGraph = new MazeGraph(numCells);
+			mazeGraph.populateMazeGraph(mazeData);
+			
+			// Displaying results
+			DisplayGraph.print(mazeData, mazeGraph);
+			// run the solver(s)
+			System.out.println("");
+			MazeGraphSolver.solveWithBFS(mazeGraph);
+			System.out.println();
+			MazeGraphSolver.solveWithDFS(mazeGraph);
+			System.out.println("");
+			System.out.println("\n");
+
+
 		} else {
 			Scanner sc = new Scanner(System.in);
 			System.out.print("Enter size of Maze: ");
@@ -51,6 +77,16 @@ public class Maze {
 			}
 
 		}
+	}
+	
+	public static void readFile(File filename) throws IOException {
+		Scanner sc = new Scanner(filename);
+		StringBuilder fileContent = new StringBuilder();
+		while (sc.hasNext()) {
+			fileContent.append(sc.nextLine());
+		}
+		mazeData = fileContent.substring(1).replaceAll("\\s+", "");
+		mazeSize = Integer.parseInt(fileContent.substring(0, 1));
 	}
 
 	public static void generateRandomMaze(int n) {
@@ -302,6 +338,7 @@ public class Maze {
 
 	}
 
+	// This method does not work properly yet
 	public static void draw(String maze) {
 
 		int[][] array = convertStringToMultidimensionalIntArray(maze);
@@ -331,6 +368,7 @@ public class Maze {
 	}
 	
 
+	// This method does not work properly yet
 	private static void drawMaze(Cell[] cells) {
 		
 		for(int i = 0; i < n; i++) {
