@@ -93,7 +93,6 @@ public class Maze {
 		Random side = new Random();
 		while (find(0) != find(N - 1)) {
 			int m = room.nextInt(N);
-			System.out.println("m is " + m);
 
 			// case for when m is the start room
 			if (m == 0) {
@@ -113,12 +112,12 @@ public class Maze {
 				int s = side.nextInt(2);
 				if (s == 0 && find(n - 1) != find(n - 2)) {
 					a[n - 1][SOUTH] = 0;
-					a[(n - 1)+n][NORTH] = 0;
-					union(n - 1,  n + (n - 1));
+					a[(n - 1) + n][NORTH] = 0;
+					union(n - 1, n + (n - 1));
 				} else {
 					a[m][WEST] = 0;
-					a[m-1][EAST] = 0;
-					union(m, m-1);
+					a[m - 1][EAST] = 0;
+					union(m, m - 1);
 				}
 				// case for when m is the bottom left corner room
 			} else if (m == N - n) {
@@ -239,7 +238,7 @@ public class Maze {
 			for (int j = 0; j < 4; j++) {
 				maze += a[i][j];
 				System.out.print(" " + a[i][j]);
-				
+
 			}
 		}
 		System.out.println("\n");
@@ -288,40 +287,90 @@ public class Maze {
 	}
 
 	public static void draw(String maze) {
-		int mazeLength = maze.length();
+
 		int[][] array = convertStringToMultidimensionalIntArray(maze);
+		Cell[] cells = new Cell[N];
+
+		for (int i = 0; i < N; i++) {
+			int isNorthOpen = 0, isSouthOpen = 0, isWestOpen = 0, isEastOpen = 0;
+			for (int j = 0; j < 4; j++) {
+
+				if (j == NORTH) {
+					isNorthOpen = array[i][j];
+				}
+				if (j == SOUTH) {
+					isSouthOpen = array[i][j];
+				}
+				if (j == EAST) {
+					isEastOpen = array[i][j];
+				}
+				if (j == WEST) {
+					isWestOpen = array[i][j];
+				}
+			}
+			cells[i] = new Cell(isNorthOpen, isSouthOpen, isEastOpen, isWestOpen);
+		}
 		
+		drawMaze(cells);
+	}
+	
 
-
-
+	private static void drawMaze(Cell[] cells) {
+		
+		for(int i = 0; i < n; i++) {
+			if(cells[i].getNorthWall() == 0 && cells[i].getWestWall() == 1) {
+				System.out.print("X  ");
+			} else if(cells[i].getNorthWall() == 0 && cells[i].getWestWall() == 1) {
+				System.out.print("  X");
+			}else if(cells[i].getNorthWall() == 0) {
+				System.out.print("   ");
+			} else if(cells[i].getNorthWall() == 1) {
+				System.out.print("XXX");
+			}
+		}
+		System.out.println();
+		
+		for(int i = 0; i < n; i++) {
+			if(cells[i].getWestWall() == 1 && cells[i].getEastWall() == 1 && cells[i].getAlreadyDrawnBefore() == 0) {
+				System.out.print("X  X");
+				cells[i+1].setAlreadyDrawnBefore(1);
+			} else if(cells[i].getWestWall() == 1 && cells[i].getEastWall() == 0 && cells[i].getAlreadyDrawnBefore() == 0) {
+				System.out.print("X  ");
+				cells[i+1].setAlreadyDrawnBefore(1);
+			} else if(cells[i].getWestWall()  == 0 && cells[i].getEastWall() == 1 && cells[i].getAlreadyDrawnBefore() == 0) {
+				System.out.print("  X");
+				cells[i+1].setAlreadyDrawnBefore(1);
+			} else if(cells[i].getWestWall()  == 0 && cells[i].getEastWall() == 0 && cells[i].getAlreadyDrawnBefore() == 0) {
+				System.out.print("   ");
+				cells[i+1].setAlreadyDrawnBefore(1);
+			} else if(cells[i].getEastWall()  == 0) {
+				System.out.print("  ");
+			} else if(cells[i].getEastWall() == 1) {
+				System.out.print(" X");
+			}
+		}
+		
 	}
 
+	// This method can take a maze.txt String parameter and convert it to a
+	// int[N][4] array.
 	private static int[][] convertStringToMultidimensionalIntArray(String maze) {
 		// TODO Auto-generated method stub
 		int[][] array = new int[N][4];
-		
-		for(int i = 0; i < maze.length(); i++) {
-			int currentRoom = i/4;
+
+		for (int i = 0; i < maze.length(); i++) {
+			int currentRoom = i / 4;
 			int whichWall = i % 4;
-			if(whichWall == NORTH) {
+			if (whichWall == NORTH) {
 				array[currentRoom][NORTH] = Character.getNumericValue(maze.charAt(i));
-			} else if(whichWall == SOUTH) {
+			} else if (whichWall == SOUTH) {
 				array[currentRoom][SOUTH] = Character.getNumericValue(maze.charAt(i));
-			} else if(whichWall == WEST) {
+			} else if (whichWall == WEST) {
 				array[currentRoom][WEST] = Character.getNumericValue(maze.charAt(i));
-			} else if(whichWall == EAST) {
+			} else if (whichWall == EAST) {
 				array[currentRoom][EAST] = Character.getNumericValue(maze.charAt(i));
 			}
 		}
-		
-		for (int i = 0; i < N; i++) {
-			System.out.println();
-			for (int j = 0; j < 4; j++) {
-				System.out.print(" " + array[i][j]);
-				
-			}
-		}
-		System.out.println("\n");
 
 		return array;
 	}
